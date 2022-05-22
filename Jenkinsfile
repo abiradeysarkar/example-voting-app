@@ -23,8 +23,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh "eval \$(aws ecr get-login --no-include-email --region us-east-1) && sleep 2"
-                sh "cd vote && docker build . -t 635145294553.dkr.ecr.us-east-1.amazonaws.com/vote:\${BUILD_NUMBER}"
-                sh "docker push 635145294553.dkr.ecr.us-east-1.amazonaws.com/vote:\${BUILD_NUMBER}"
+                sh "cd vote && docker build . -t 381372271377.dkr.ecr.us-east-1.amazonaws.com/vote:\${BUILD_NUMBER}"
+                sh "docker push 381372271377.dkr.ecr.us-east-1.amazonaws.com/vote:\${BUILD_NUMBER}"
             }
         }
         stage('Deploy in ECS') {
@@ -32,7 +32,7 @@ pipeline {
 
                 script {
                     sh'''
-                    ECR_IMAGE="635145294553.dkr.ecr.us-east-1.amazonaws.com/vote:${BUILD_NUMBER}"
+                    ECR_IMAGE="381372271377.dkr.ecr.us-east-1.amazonaws.com/vote:${BUILD_NUMBER}"
                     TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "$TASK_FAMILY" --region "$AWS_DEFAULT_REGION")
                     NEW_TASK_DEFINTIION=$(echo $TASK_DEFINITION | jq --arg IMAGE "$ECR_IMAGE" '.taskDefinition | .containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.compatibilities)')
                     NEW_TASK_INFO=$(aws ecs register-task-definition --region "$AWS_DEFAULT_REGION" --cli-input-json "$NEW_TASK_DEFINTIION")
@@ -48,7 +48,7 @@ pipeline {
     post {
         always {
             deleteDir()
-            sh "docker rmi 635145294553.dkr.ecr.us-east-1.amazonaws.com/vote:\${BUILD_NUMBER}"
+            sh "docker rmi 381372271377.dkr.ecr.us-east-1.amazonaws.com/vote:\${BUILD_NUMBER}"
             }
         }
 }
